@@ -21,11 +21,19 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        core/PluginManager.cpp
 )
 
 qt_add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
 )
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/core
+)
+
+add_subdirectory(plugins)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
