@@ -1,0 +1,49 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+exclude: ^PythonProcess/echo|^PythonProcess/logger
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    -   id: trailing-whitespace
+        exclude: ^doc/static/uml/styles/plantuml-c4/
+    -   id: end-of-file-fixer
+        exclude: ^doc/static/uml/styles/plantuml-c4/
+    -   id: check-yaml
+    -   id: check-added-large-files
+-   repo: local
+    hooks:
+    -   id: isort
+        name: Sort import
+        entry: isort
+        language: system
+        types: [file, python]
+    -   id: black
+        name: Black (auto-format)
+        entry: black
+        language: system
+        types: [file, python]
+    -   id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        files: src/.*\.py$
+        types: [file, python]
+    -   id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        files: src/.*\.py$
+        types: [file, python]
+    -   id: pydocstyle
+        name: pydocstyle
+        entry: pydocstyle
+        language: system
+        files: src/.*\.py$
+        types: [file, python]
+    -   id: codespell
+        name: codespell
+        description: Checks for common misspellings in text files.
+        entry: codespell
+        language: python
+        types: [text]

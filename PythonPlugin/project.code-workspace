@@ -1,0 +1,70 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"[windows]": {
+			"python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python",
+		},
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": "explicit"
+		},
+		"isort.check": true,
+		"[python]": {
+			"editor.defaultFormatter": "ms-python.black-formatter",
+			"editor.formatOnSave": true,
+		},
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Debug",
+				"type": "debugpy",
+				"request": "launch",
+				"module": "src.__main__",
+				"justMyCode": false,
+				"args": [
+					"update"
+				]
+			}
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Check quality (pre-commit)",
+				"type": "shell",
+				"command": "pre-commit",
+				"args": [
+					"run",
+					"--all-files"
+				],
+				"options": {
+					"cwd": "${workspaceFolder}"
+				},
+				"group": {
+					"kind": "test",
+					"isDefault": false
+				},
+				"presentation": {
+					"reveal": "always",
+					"panel": "shared"
+				}
+			},
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"tamasfe.even-better-toml",
+			"ms-python.black-formatter",
+			"ms-python.debugpy",
+			"ms-python.isort",
+			"ms-python.pylint",
+			"ms-python.python",
+		]
+	}
+}
