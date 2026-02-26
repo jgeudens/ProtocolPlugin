@@ -3,6 +3,7 @@
 #include "ProtocolCore/ProtocolCore.h"
 #include "ProtocolCore/QtPluginInterface.h"
 #include <QObject>
+#include <QPluginLoader>
 #include <QString>
 #include <QVector>
 
@@ -23,7 +24,7 @@ public:
     QString lastError() const;
 
 private:
-    QVector<QObject*> loaderOwners_; // keep plugin instances alive
+    QVector<QPluginLoader*> loaders_; // keep QPluginLoader instances alive
     QVector<AbstractProtocolPlugin*> plugins_;
     QString lastError_;
 };

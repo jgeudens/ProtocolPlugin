@@ -12,12 +12,18 @@ PluginManager::PluginManager(QObject* parent) : QObject(parent)
 
 PluginManager::~PluginManager()
 {
-    // QPluginLoader instances are owned by the QObject instances we stored
-    // Unload is automatic when the loader is destroyed; we only kept plugin
-    // instances (QObjects) to keep them alive for the lifetime of the manager.
-    for (QObject* o : loaderOwners_)
+    // Ensure each loader unloads its plugin. We store QPluginLoader* in
+    // `loaders_` so the loaders (and therefore plugin instances) remain
+    // valid for the lifetime of the manager. Call unload() here to
+    // explicitly unload plugin libraries; Qt parenting will handle
+    // deletion of the loader objects themselves.
+    for (QPluginLoader* loader : loaders_)
     {
-        delete o;
+        if (loader)
+        {
+            loader->unload();
+        }
+        delete loader;
     }
 }
 
@@ -43,11 +49,16 @@ bool PluginManager::loadPluginsFromDir(const QString& dirPath)
     for (const QFileInfo& fi : files)
     {
         QString path = fi.absoluteFilePath();
-        QPluginLoader loader(path);
-        QObject* instance = loader.instance();
+        // Allocate the loader on the heap and parent it to this manager so
+        // that the loader (and loaded plugin instance) remain valid while
+        // the manager exists.
+        QPluginLoader* loader = new QPluginLoader(path, this);
+        QObject* instance = loader->instance();
         if (!instance)
         {
-            lastError_ = loader.errorString();
+            lastError_ = loader->errorString();
+            // loader failed to load; delete it to avoid keeping a useless loader
+            delete loader;
             continue;
         }
 
@@ -55,16 +66,14 @@ bool PluginManager::loadPluginsFromDir(const QString& dirPath)
         if (!plugin)
         {
             lastError_ = QString("Plugin at %1 does not implement AbstractProtocolPlugin").arg(path);
-            loader.unload();
+            loader->unload();
+            delete loader;
             continue;
         }
 
-        // Keep the instance alive by transferring ownership to our vector
-        loaderOwners_.append(instance);
+        // Keep the loader alive so the plugin instance remains valid.
+        loaders_.append(loader);
         plugins_.append(plugin);
-        // Note: QPluginLoader must stay alive to keep symbols loaded; by
-        // storing the QObject returned by instance(), the loader's internal
-        // data remains valid. We don't keep the loader object here.
     }
 
     return !plugins_.isEmpty();
