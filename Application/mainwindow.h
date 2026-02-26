@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "PluginManager.h"
+#include "core/PluginManager.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE

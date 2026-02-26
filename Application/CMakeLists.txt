@@ -30,7 +30,6 @@ qt_add_executable(${PROJECT_NAME}
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/core
 )
 
 add_subdirectory(plugins)
