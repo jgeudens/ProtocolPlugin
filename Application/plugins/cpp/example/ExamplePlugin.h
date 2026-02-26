@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ProtocolCore/ProtocolCore.h"
-#include "ProtocolCore/QtPluginInterface.h"
+#include "ProtocolCore.h"
+#include "QtPluginInterface.h"
 #include <QObject>
 #include <QVariantMap>
 

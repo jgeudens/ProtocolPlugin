@@ -43,6 +43,11 @@ int main(int argc, char** argv)
     plugin->validate(cfg);
 
     auto inst = plugin->create(cfg);
+    if (!inst)
+    {
+        std::cerr << "Plugin returned null instance\n";
+        return 4;
+    }
     inst->connect();
     auto data = inst->poll();
     std::cout << "Polled value count: " << data.size() << "\n";
