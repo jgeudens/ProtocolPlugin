@@ -1,57 +1,76 @@
-#include "ExamplePlugin.h"
+#include "PluginInterface/PluginInterface.h"
+#include "PluginInterface/QtPluginInterface.h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QPluginLoader>
-#include <iostream>
+#include <QTest>
+#include <QVariantMap>
 
-int main(int argc, char** argv)
+class ExamplePluginTest : public QObject
 {
-    QCoreApplication app(argc, argv);
+    Q_OBJECT
 
-    QDir dir(QCoreApplication::applicationDirPath());
+private slots:
+    void testPluginLoadsAndRuns()
+    {
+        QDir dir(QCoreApplication::applicationDirPath());
 #if defined(Q_OS_WIN)
-    QString libName = "example_plugin.dll";
+        QString libName = "example_plugin.dll";
 #elif defined(Q_OS_MAC)
-    QString libName = "libexample_plugin.dylib";
+        QString libName = "libexample_plugin.dylib";
 #else
-    QString libName = "libexample_plugin.so";
+        QString libName = "libexample_plugin.so";
 #endif
 
-    QString path = dir.filePath(libName);
-    QPluginLoader loader(path);
-    QObject* obj = loader.instance();
-    if (!obj)
-    {
-        std::cerr << "Failed to load plugin: " << loader.errorString().toStdString() << "\n";
-        return 2;
+        // Try to locate the built plugin under a nearby Plugins/example directory
+        QString path;
+        QDir searchDir(QCoreApplication::applicationDirPath());
+        for (int i = 0; i < 8; ++i)
+        {
+            QString candidate = QDir(searchDir.filePath("Plugins/example")).filePath(libName);
+            if (QFile::exists(candidate))
+            {
+                path = candidate;
+                break;
+            }
+            if (!searchDir.cdUp())
+                break;
+        }
+        if (path.isEmpty())
+            path = dir.filePath(libName);
+
+        QPluginLoader loader(path);
+
+        // Diagnostic output to help locate load failures
+        qDebug() << "Trying plugin path:" << path;
+        qDebug() << "Exists:" << QFile::exists(path);
+
+        QObject* obj = loader.instance();
+        QVERIFY2(obj,
+                 qPrintable(QString("%1 (exists=%2)").arg(loader.errorString(), QFile::exists(path) ? "yes" : "no")));
+
+        auto plugin = qobject_cast<PluginInterface::AbstractProtocolPlugin*>(obj);
+        QVERIFY(plugin);
+
+        auto meta = plugin->metadata();
+        QVERIFY(!meta.id.isEmpty());
+
+        auto schema = plugin->configSchema();
+        QVERIFY(schema.size() >= 0);
+
+        QVariantMap cfg;
+        plugin->validate(cfg);
+
+        auto inst = plugin->create(cfg);
+        QVERIFY(inst);
+
+        inst->connect();
+        auto data = inst->poll();
+        QVERIFY(data.size() >= 0);
+        inst->disconnect();
     }
+};
 
-    auto plugin = qobject_cast<PluginInterface::AbstractProtocolPlugin*>(obj);
-    if (!plugin)
-    {
-        std::cerr << "Plugin did not implement interface\n";
-        return 3;
-    }
+QTEST_MAIN(ExamplePluginTest)
 
-    auto meta = plugin->metadata();
-    std::cout << "Plugin id: " << meta.id.toStdString() << "\n";
-
-    auto schema = plugin->configSchema();
-    std::cout << "Schema fields: " << schema.size() << "\n";
-
-    QVariantMap cfg;
-    plugin->validate(cfg);
-
-    auto inst = plugin->create(cfg);
-    if (!inst)
-    {
-        std::cerr << "Plugin returned null instance\n";
-        return 4;
-    }
-    inst->connect();
-    auto data = inst->poll();
-    std::cout << "Polled value count: " << data.size() << "\n";
-    inst->disconnect();
-
-    return 0;
-}
+#include "ExamplePluginTest.moc"

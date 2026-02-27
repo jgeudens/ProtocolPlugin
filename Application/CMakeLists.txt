@@ -35,7 +35,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/Scope
 )
 
-# add_subdirectory(tests)
+add_subdirectory(tests)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
