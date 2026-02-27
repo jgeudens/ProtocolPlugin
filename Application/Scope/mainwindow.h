@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "core/PluginManager.h"
+#include "PluginManager/PluginManager.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -21,6 +21,6 @@ public:
 private:
     Ui::MainWindow* _ui;
 
-    ProtocolCore::PluginManager _pluginManager;
+    PluginInterface::PluginManager _pluginManager;
 };
 #endif // MAINWINDOW_H

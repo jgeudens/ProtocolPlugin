@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ProtocolCore/ProtocolCore.h"
-#include "ProtocolCore/QtPluginInterface.h"
+#include "PluginInterface/PluginInterface.h"
+#include "PluginInterface/QtPluginInterface.h"
 #include <QObject>
 #include <QPluginLoader>
 #include <QString>
 #include <QVector>
 
-namespace ProtocolCore {
+namespace PluginInterface {
 
 class PluginManager : public QObject
 {
@@ -29,4 +29,4 @@ private:
     QString lastError_;
 };
 
-} // namespace ProtocolCore
+} // namespace PluginInterface
