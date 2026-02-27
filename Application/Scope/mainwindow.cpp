@@ -32,19 +32,18 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::MainW
 {
     _ui->setupUi(this);
 
-    // Load plugin directory determined at runtime
-    QString pluginPath = findPluginLibraryPath();
-    _pluginManager.loadPluginsFromDir(pluginPath);
-
-    // Loop over plugin and print info to status bar for demo purposes
-    for (PluginInterface::AbstractProtocolPlugin* plugin : _pluginManager.plugins())
-    {
-        auto meta = plugin->metadata();
-        _ui->statusbar->showMessage(QString("Loaded plugin: %1 (%2)").arg(meta.name).arg(meta.id), 5000);
-    }
-
     connect(_ui->btnPluginInfo, &QPushButton::clicked,
-            [this]() { _ui->statusbar->showMessage("Plugin Info requested", 1000); });
+            [this]() { // Load plugin directory determined at runtime
+                QString pluginPath = findPluginLibraryPath();
+                _pluginManager.loadPluginsFromDir(pluginPath);
+
+                // Loop over plugin and print info to status bar for demo purposes
+                for (PluginInterface::AbstractProtocolPlugin* plugin : _pluginManager.plugins())
+                {
+                    auto meta = plugin->metadata();
+                    _ui->txtPluginInfo->appendPlainText(QString("Loaded plugin: %1 (%2)").arg(meta.name).arg(meta.id));
+                }
+            });
 }
 
 MainWindow::~MainWindow()
