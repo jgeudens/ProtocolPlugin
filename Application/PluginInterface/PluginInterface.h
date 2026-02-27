@@ -6,7 +6,7 @@
 #include <QVector>
 #include <memory>
 
-namespace ProtocolCore {
+namespace PluginInterface {
 
 struct PluginMetadata
 {
@@ -58,4 +58,4 @@ public:
     virtual std::unique_ptr<AbstractProtocolInstance> create(const QVariantMap& config) = 0;
 };
 
-} // namespace ProtocolCore
+} // namespace PluginInterface

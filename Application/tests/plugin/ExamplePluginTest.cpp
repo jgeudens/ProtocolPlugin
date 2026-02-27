@@ -26,7 +26,7 @@ int main(int argc, char** argv)
         return 2;
     }
 
-    auto plugin = qobject_cast<ProtocolCore::AbstractProtocolPlugin*>(obj);
+    auto plugin = qobject_cast<PluginInterface::AbstractProtocolPlugin*>(obj);
     if (!plugin)
     {
         std::cerr << "Plugin did not implement interface\n";

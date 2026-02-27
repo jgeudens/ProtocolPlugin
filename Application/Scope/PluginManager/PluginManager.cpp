@@ -4,7 +4,7 @@
 #include <QFileInfo>
 #include <QPluginLoader>
 
-namespace ProtocolCore {
+namespace PluginInterface {
 
 PluginManager::PluginManager(QObject* parent) : QObject(parent)
 {
@@ -89,4 +89,4 @@ QString PluginManager::lastError() const
     return lastError_;
 }
 
-} // namespace ProtocolCore
+} // namespace PluginInterface

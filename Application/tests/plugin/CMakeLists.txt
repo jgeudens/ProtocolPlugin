@@ -9,7 +9,7 @@ add_library(example_plugin SHARED
 
 target_include_directories(example_plugin PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/ProtocolCore
+    ${CMAKE_SOURCE_DIR}/PluginInterface
 )
 
 target_link_libraries(example_plugin PUBLIC
@@ -21,7 +21,7 @@ add_executable(example_plugin_test
 )
 
 target_include_directories(example_plugin_test PRIVATE
-    ${CMAKE_SOURCE_DIR}/ProtocolCore
+    ${CMAKE_SOURCE_DIR}/PluginInterface
 )
 
 target_link_libraries(example_plugin_test PRIVATE
