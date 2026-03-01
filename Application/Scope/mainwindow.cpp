@@ -34,8 +34,30 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::MainW
 
     connect(_ui->btnPluginInfo, &QPushButton::clicked,
             [this]() { // Load plugin directory determined at runtime
+                if (_pluginsLoaded)
+                {
+                    statusBar()->showMessage("Plugins already loaded", 3000);
+                    return;
+                }
+
                 QString pluginPath = findPluginLibraryPath();
-                _pluginManager.loadPluginsFromDir(pluginPath);
+                bool ok = _pluginManager.loadPluginsFromDir(pluginPath);
+                if (!ok)
+                {
+                    QString err = _pluginManager.lastError();
+                    if (err.isEmpty())
+                        err = QString("No plugins loaded from %1").arg(pluginPath);
+                    _ui->txtPluginInfo->appendPlainText(QString("Failed to load plugins: %1").arg(err));
+                    statusBar()->showMessage(QString("Failed to load plugins: %1").arg(err), 5000);
+                    return;
+                }
+
+                // Mark loaded and disable repeated reloads
+                _pluginsLoaded = true;
+                _ui->btnPluginInfo->setEnabled(false);
+
+                // Clear previous info to avoid duplicate entries
+                _ui->txtPluginInfo->clear();
 
                 // Loop over plugin and print info to status bar for demo purposes
                 for (PluginInterface::AbstractProtocolPlugin* plugin : _pluginManager.plugins())

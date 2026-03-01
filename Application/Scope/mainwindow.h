@@ -22,5 +22,6 @@ private:
     Ui::MainWindow* _ui;
 
     PluginInterface::PluginManager _pluginManager;
+    bool _pluginsLoaded{ false };
 };
 #endif // MAINWINDOW_H
