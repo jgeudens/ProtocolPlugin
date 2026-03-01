@@ -56,17 +56,33 @@ private slots:
         QVERIFY(!meta.id.isEmpty());
 
         auto schema = plugin->configSchema();
-        QVERIFY(schema.size() >= 0);
+        QVERIFY(schema.size() > 0);
+
+        // Check the expected config field is present and has the expected properties
+        auto field = schema[0];
+        QCOMPARE(field.name, QString("dummy"));
+        QVERIFY(field.type == PluginInterface::FieldType::Integer);
+        QCOMPARE(field.defaultValue.toInt(), 0);
+        QVERIFY(field.required == false);
 
         QVariantMap cfg;
-        plugin->validate(cfg);
+        try
+        {
+            plugin->validate(cfg);
+        }
+        catch (...)
+        {
+            QFAIL("plugin->validate(cfg) threw an exception");
+        }
 
         auto inst = plugin->create(cfg);
         QVERIFY(inst);
 
         inst->connect();
         auto data = inst->poll();
-        QVERIFY(data.size() >= 0);
+        QVERIFY(data.size() > 0);
+        QVERIFY(data.contains("value"));
+        QCOMPARE(data.value("value").toInt(), 42);
         inst->disconnect();
     }
 };
